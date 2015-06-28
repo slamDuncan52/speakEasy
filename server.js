@@ -17,17 +17,25 @@ http.createServer(function(req,res){
         res.end(twiRes.toString());
 }).listen(1337);
 
-
-exec("ls ~", function(err,stdout,stderr){
-        twilioClient.messages.create({
-                body: stdout,
-                to: "+18108755224",
-                from: "+18102750107",
-        },function(err,msg){
-                if(err){
-                        console.log(err);
-                } else {
-                        console.log(msg.body);
+function textCommand(command,cb){
+        exec(command, function(err,stdout,stderr){
+                if(!stdout){
+                        stdout = command+" finished\n";
                 }
+                twilioClient.messages.create({
+                        body: stdout,
+                        to: "+18108755224",
+                        from: "+18102750107",
+                },function(err,msg){
+                        if(err){
+                                console.log(err);
+                        } else {
+                                console.log(msg.body);
+                                if(cb){
+                                        cb();
+                                }
+                        }
+                });
         });
-});
+}
+textCommand("cd ~/.vim/bundle",function(){textCommand("ls")});
