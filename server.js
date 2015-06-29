@@ -3,7 +3,7 @@ var accountSID = "AC1662bc8ab0871857df0b5e53021d9c4b";
 var authToken = "c1fea3932ed9c1ccae6fc3f34a3356da";
 /*----Requires----*/
 var twilio = require('twilio');
-var fs = require('fs');
+var path = require('path');
 var exec = require('child_process').exec,child;
 var express = require('express');
 var parser = require('body-parser');
@@ -28,22 +28,21 @@ var server = http.listen(3000, function () {
 	var port = server.address().port;
 });
 
-function textCommand(command,phoneNumber,cb){
-	exec(command,{cwd: curDir},
-	     function(err,stdout,stderr){
-		     if(stdout === ""){
-			     stdout = command+" finished\n";
-		     }
-		     twilioClient.messages.create({
-			     body: stdout,
-			     to: phoneNumber,
-			     from: twiNumber,
-		     },function(err,msg){
-			     if(err){
-				     console.log(err);
-			     } else if(cb){
-				     cb();
-			     }
-		     });
-	     });
+function textCommand(command,phoneNumber){
+	console.log("processing " + command);
+	var child = exec(command,{cwd: curDir},function(err,stdout,stderr){
+		console.log("output: " + stdout);
+		if(stdout === ''){
+			stdout = command + ' completed';
+		}
+		twilioClient.messages.create({
+			body: stdout,
+			to: phoneNumber,
+			from: twiNumber,
+		});
+	});
+	commArr = command.split(' ');
+	if(commArr.indexOf("cd") > -1){
+		curDir = path.resolve(curDir,commArr[commArr.indexOf("cd") + 1]);
+	}
 }
