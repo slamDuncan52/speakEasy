@@ -1,0 +1,29 @@
+{
+  "name": "speakeasy",
+  "version": "0.2.0",
+  "description": "Utility to issue shell commands from sms device",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slamDuncan52/speakEasy.git"
+  },
+  "keywords": [
+    "sms",
+    "ssh",
+    "remote",
+    "twilio"
+  ],
+  "author": "Mitchell Duncan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/slamDuncan52/speakEasy/issues"
+  },
+  "homepage": "https://github.com/slamDuncan52/speakEasy#readme",
+  "dependencies": {
+    "express": "^4.13.0"
+  }
+}
