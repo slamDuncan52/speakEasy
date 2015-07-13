@@ -15,34 +15,75 @@ var twiNumber = "+18102750107";
 var http = express();
 var curDir = "/home";
 var environ = process.env;
+var trusted = [];
 
 http.use(parser.json());
 http.use(parser.urlencoded({extended: true}));
 
 http.post('/',function(req,res){
-	textCommand(req.body.Body,req.body.From);
+        if(trusted.indexOf(req.body.From) > -1){
+                if(req.body.Body === "exit"){
+                        trusted.splice(trusted.indexOf(req.body.From),1);
+                        twilioClient.messages.create({
+                                body: "Goodbye",
+                                to: req.body.From,
+                                from: twiNumber,
+                        });
+                } else {
+                        textCommand(req.body.Body,req.body.From);
+                }
+        } else {
+                verifyAttempt(req.body.Body, function(status){
+                        if(status){
+                                trusted.push(req.body.From);
+                                twilioClient.messages.create({
+                                        body: "Welcome! Send commands now",
+                                        to: req.body.From,
+                                        from: twiNumber,
+                                });
+                        } else {
+                                twilioClient.messages.create({
+                                        body: "Incorrect login information",
+                                        to: req.body.From,
+                                        from: twiNumber,
+                                });
+                        }
+                });
+        }
 });
 
 var server = http.listen(3000, function () {
-	var host = server.address().address;
-	var port = server.address().port;
+        var host = server.address().address;
+        var port = server.address().port;
 });
+console.log("Server started!");
+
+function verifyAttempt(input,callback){
+        console.log(input);
+        var spl = input.split(" ");
+        var comm = "echo "+spl[1]+" | sudo -u "+spl[0]+" -S ls";
+        exec(comm,function(err,stdout,stderr){
+                console.log(stdout);
+                console.log(stderr);
+                callback(true);
+        });
+}
 
 function textCommand(command,phoneNumber){
-	console.log("processing " + command);
-	var child = exec(command,{cwd: curDir},function(err,stdout,stderr){
-		console.log("output: " + stdout);
-		if(stdout === ''){
-			stdout = command + ' completed';
-		}
-		twilioClient.messages.create({
-			body: stdout,
-			to: phoneNumber,
-			from: twiNumber,
-		});
-	});
-	commArr = command.split(' ');
-	if(commArr.indexOf("cd") > -1){
-		curDir = path.resolve(curDir,commArr[commArr.indexOf("cd") + 1]);
-	}
+        console.log("processing " + command);
+        var child = exec(command,{cwd: curDir},function(err,stdout,stderr){
+                console.log("output: " + stdout);
+                if(stdout === ''){
+                        stdout = command + ' completed';
+                }
+                twilioClient.messages.create({
+                        body: stdout,
+                        to: phoneNumber,
+                        from: twiNumber,
+                });
+        });
+        commArr = command.split(' ');
+        if(commArr.indexOf("cd") > -1){
+                curDir = path.resolve(curDir,commArr[commArr.indexOf("cd") + 1]);
+        }
 }
