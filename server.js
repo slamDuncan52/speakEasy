@@ -37,13 +37,13 @@ http.post('/',function(req,res){
                         if(status){
                                 trusted.push(req.body.From);
                                 twilioClient.messages.create({
-                                        body: "Welcome! Send commands now",
+                                        body: "Login successful!",
                                         to: req.body.From,
                                         from: twiNumber,
                                 });
                         } else {
                                 twilioClient.messages.create({
-                                        body: "Incorrect login information",
+                                        body: "Incorrect login information. Send 'username password'",
                                         to: req.body.From,
                                         from: twiNumber,
                                 });
@@ -59,20 +59,21 @@ var server = http.listen(3000, function () {
 console.log("Server started!");
 
 function verifyAttempt(input,callback){
-        console.log(input);
         var spl = input.split(" ");
         var comm = "echo "+spl[1]+" | sudo -u "+spl[0]+" -S ls";
         exec(comm,function(err,stdout,stderr){
-                console.log(stdout);
-                console.log(stderr);
-                callback(true);
+                if(stderr === ""){
+                        callback(true);
+                } else {
+                        callback(false);
+                }
         });
 }
 
 function textCommand(command,phoneNumber){
-        console.log("processing " + command);
+        //console.log("processing " + command);
         var child = exec(command,{cwd: curDir},function(err,stdout,stderr){
-                console.log("output: " + stdout);
+                //console.log("output: " + stdout);
                 if(stdout === ''){
                         stdout = command + ' completed';
                 }
