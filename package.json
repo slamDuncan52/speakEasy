@@ -24,6 +24,11 @@
   },
   "homepage": "https://github.com/slamDuncan52/speakEasy#readme",
   "dependencies": {
-    "express": "^4.13.0"
+    "exec": "^0.2.0",
+    "express": "*",
+    "parser": "^0.1.4",
+    "path": "^0.11.14",
+    "tunnel": "0.0.3",
+    "twilio": "^2.2.1"
   }
 }
