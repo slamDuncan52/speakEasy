@@ -1,19 +1,27 @@
 /*----Twilio Account Info----*/
-var accountSID = "AC1662bc8ab0871857df0b5e53021d9c4b";
-var authToken = "c1fea3932ed9c1ccae6fc3f34a3356da";
+var accountSID;
+var authToken;
+var twiNumber;
+
 /*----Requires----*/
+var fs = require('fs');
 var twilio = require('twilio');
 var path = require('path');
-var exec = require('child_process').exec,
-        child;
+var exec = require('child_process').exec,child;
 var express = require('express');
 var parser = require('body-parser');
 var tunnel = require('localtunnel');
 
+//Read credential file
+var data = fs.readFileSync("credentials.txt","utf8");
+var split = data.split('\n');
+accountSID = split[0];
+authToken = split[1];
+twiNumber = split[2];
+
 /*----Global Vars----*/
 var twilioClient = twilio(accountSID, authToken);
 var twiRes = twilio.TwimlResponse();
-var twiNumber = "+18102750107";
 var http = express();
 var tunnelCli;
 var curDir = "/home";

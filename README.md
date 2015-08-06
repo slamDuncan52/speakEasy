@@ -6,12 +6,10 @@ Suggestions and contributions are welcome, but please be wary
 of using it in the wild.
 
 #Usage
-1. Start ngrok
+1. Write a credentials.txt which contains your twilio acccountSID, authToken, and given SMS number on lines 1, 2, and 3 respectively
 2. Start the node server
 3. Text!
 
 #TODO
-- Set up Twiml to handle incoming messages
-- Export server to public web (For free if at all possible)
 - Set up textCommand to update and pass environement variables for 
   subsequent requests
